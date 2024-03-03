@@ -1,0 +1,72 @@
+.home-container {
+  background-color: #121212;
+  min-height: 100vh;
+  background-image: url('https://assets.ccbp.in/frontend/react-js/home-lg-bg.png');
+  background-size: cover;
+}
+@media screen and (max-width: 767px) {
+  .home-container {
+    background-image: url('https://assets.ccbp.in/frontend/react-js/home-sm-bg.png');
+  }
+}
+.home-content-container {
+  height: 89vh;
+  width: 90%;
+  max-width: 1200px;
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 30px;
+}
+@media screen and (max-width: 767px) {
+  .home-content-container {
+    height: 90vh;
+    justify-content: flex-start;
+    margin-top: 30px;
+    gap: 20px;
+  }
+}
+.heading {
+  color: #f8fafc;
+  font-size: 65px;
+  font-weight: 600;
+}
+@media screen and (max-width: 767px) {
+  .heading {
+    font-size: 35px;
+  }
+}
+.description {
+  color: #f1f5f9;
+  font-size: 19px;
+  font-weight: 300;
+  line-height: 1.5;
+}
+@media screen and (max-width: 767px) {
+  .description {
+    font-size: 14px;
+  }
+}
+.find-jobs-btn {
+  width: 120px;
+  height: 45px;
+  background-color: #6366f1;
+  color: #f1f5f9;
+  font-size: 14px;
+  font-weight: 400;
+  border-radius: 6px;
+  border: none;
+  outline: none;
+  padding: 5px 5px;
+  cursor: pointer;
+}
+.find-jobs-btn:hover {
+  background-color: #4f46e5;
+}
+@media screen and (max-width: 767px) {
+  .find-jobs-btn {
+    width: 100px;
+    height: 35px;
+  }
+}
