@@ -83,6 +83,8 @@
   .navigation-item-container-small-device {
     display: flex;
     align-items: center;
+    list-style-type: none;
+    padding-left: 0;
     gap: 20px;
   }
 }

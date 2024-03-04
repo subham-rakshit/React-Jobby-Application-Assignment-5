@@ -56,7 +56,8 @@ const apiStatusConstant = {
 class JobsRoute extends Component {
   state = {
     profileData: {},
-    apiStatus: apiStatusConstant.initial,
+    apiProfileStatus: apiStatusConstant.initial,
+    apiJobsStatus: apiStatusConstant.initial,
     minimumPackage: '',
     employmentType: [],
     searchInput: '',
@@ -68,10 +69,9 @@ class JobsRoute extends Component {
     this.getAllJobsData()
   }
 
-  // ------ Profile Code
-
+  //   Profile & Jobs API CALLS Starts --->
   getProfileData = async () => {
-    this.setState({apiStatus: apiStatusConstant.inProgress})
+    this.setState({apiProfileStatus: apiStatusConstant.inProgress})
 
     const token = Cookies.get('jwt_token')
     const profileApiUrl = 'https://apis.ccbp.in/profile'
@@ -96,17 +96,17 @@ class JobsRoute extends Component {
       //   console.log(updatedData)
       this.setState({
         profileData: updatedData,
-        apiStatus: apiStatusConstant.success,
+        apiProfileStatus: apiStatusConstant.success,
       })
-    } else if (response.status === 400) {
-      this.setState({apiStatus: apiStatusConstant.failure})
+    } else {
+      this.setState({apiProfileStatus: apiStatusConstant.failure})
     }
   }
 
   getAllJobsData = async () => {
     const {searchInput, employmentType, minimumPackage} = this.state
 
-    this.setState({apiStatus: apiStatusConstant.inProgress})
+    this.setState({apiJobsStatus: apiStatusConstant.inProgress})
 
     // const apiUrl = 'https://apis.ccbp.in/jobs?employment_type=FULLTIME,PARTTIME&minimum_package=1000000&search='
     const token = Cookies.get('jwt_token')
@@ -134,63 +134,30 @@ class JobsRoute extends Component {
       //   console.log(updatedData)
       this.setState({
         allJobsData: updatedData,
-        apiStatus: apiStatusConstant.success,
+        apiJobsStatus: apiStatusConstant.success,
       })
     } else {
-      this.setState({apiStatus: apiStatusConstant.failure})
+      this.setState({apiJobsStatus: apiStatusConstant.failure})
     }
   }
+  //   Profile & Jobs API CALLS Ends --->
 
-  renderProfileSuccessView = () => {
-    const {profileData} = this.state
-    const {profileDetails} = profileData
-    const {name, profileImageUrl, shortBio} = profileDetails
-    return (
-      <div className="profile-container">
-        <img src={profileImageUrl} alt={name} className="profile-img" />
-        <h1 className="profile-name">{name}</h1>
-        <p className="profile-bio">{shortBio}</p>
-      </div>
-    )
-  }
-
+  //   Failure OnClick Retry Button Starts --->
   onClickRetryProfileContent = () => {
     this.getProfileData()
   }
 
-  renderProfileFailureView = () => (
-    <div className="profile-failure-container">
-      <button
-        type="button"
-        className="retry-btn"
-        onClick={this.onClickRetryProfileContent}
-      >
-        Retry
-      </button>
-    </div>
-  )
+  onClickedRetry = () => {
+    this.getAllJobsData()
+  }
+  //   Failure OnClick Retry Button Ends --->
 
-  renderProfileInProgressView = () => (
-    <div className="loader-container" data-testid="loader">
-      <Loader type="ThreeDots" color="#ffffff" height="40" width="40" />
-    </div>
-  )
-
-  renderProfileContent = () => {
-    const {apiStatus} = this.state
-
-    switch (apiStatus) {
-      case apiStatusConstant.success:
-        return this.renderProfileSuccessView()
-      case apiStatusConstant.failure:
-        return this.renderProfileFailureView()
-      case apiStatusConstant.inProgress:
-        return this.renderProfileInProgressView()
-      default:
-        return null
-    }
+  //   SearchInput Button Clicks --->
+  onClickedSearchButton = () => {
+    this.getAllJobsData()
   }
 
+  //   Update employmentType List & minimumPackage & searchInput in State Starts --->
   onChangeTypeOfEmployment = event => {
     const {employmentType} = this.state
 
@@ -209,25 +176,6 @@ class JobsRoute extends Component {
     }
   }
 
-  renderTypeOfEmploymentLists = () => (
-    <ul className="filter-type-lists-container">
-      {employmentTypesList.map(item => (
-        <li className="each-list-container" key={item.employmentTypeId}>
-          <input
-            type="checkbox"
-            id={item.employmentTypeId}
-            className="input-elem"
-            name={item.employmentTypeId}
-            onChange={this.onChangeTypeOfEmployment}
-          />
-          <label htmlFor={item.employmentTypeId} className="filter-label-text">
-            {item.label}
-          </label>
-        </li>
-      ))}
-    </ul>
-  )
-
   salaryFilterIsChecked = event => {
     this.setState(
       {
@@ -237,43 +185,12 @@ class JobsRoute extends Component {
     )
   }
 
-  renderSalaryRangeLists = () => {
-    const {minimumPackage} = this.state
-
-    return (
-      <ul className="filter-type-lists-container">
-        {salaryRangesList.map(item => {
-          const isChecked = item.salaryRangeId === minimumPackage ? 1 : 0
-          return (
-            <li className="each-list-container" key={item.salaryRangeId}>
-              <input
-                type="radio"
-                id={item.salaryRangeId}
-                className="input-elem"
-                value={item.label}
-                checked={isChecked}
-                onChange={this.salaryFilterIsChecked}
-              />
-              <label htmlFor={item.salaryRangeId} className="filter-label-text">
-                {item.label}
-              </label>
-            </li>
-          )
-        })}
-      </ul>
-    )
-  }
-
-  // -------- Jobs Code
-
-  onClickedSearchButton = () => {
-    this.getAllJobsData()
-  }
-
   updateSearchInput = event => {
     this.setState({searchInput: event.target.value})
   }
+  //   Update employmentType List & minimumPackage & searchInput in State Ends --->
 
+  //   Render SearchInput Box in Small & Large Devices Starts --->
   renderSearchInputInSmallDevices = () => {
     const {searchInput} = this.state
     return (
@@ -321,6 +238,39 @@ class JobsRoute extends Component {
       </div>
     )
   }
+  //   Render SearchInput Box in Small & Large Devices Ends --->
+
+  //   Render the Success, Failure, InProgress View for Profile & Jobs Content Starts --->
+  renderProfileSuccessView = () => {
+    const {profileData} = this.state
+    const {profileDetails} = profileData
+    const {name, profileImageUrl, shortBio} = profileDetails
+    return (
+      <div className="profile-container">
+        <img src={profileImageUrl} alt="profile" className="profile-img" />
+        <h1 className="profile-name">{name}</h1>
+        <p className="profile-bio">{shortBio}</p>
+      </div>
+    )
+  }
+
+  renderProfileFailureView = () => (
+    <div className="profile-failure-container">
+      <button
+        type="button"
+        className="retry-btn"
+        onClick={this.onClickRetryProfileContent}
+      >
+        Retry
+      </button>
+    </div>
+  )
+
+  renderLoadingView = () => (
+    <div className="loader-container" data-testid="loader">
+      <Loader type="ThreeDots" color="#ffffff" height="40" width="40" />
+    </div>
+  )
 
   renderAllJobsListSuccessView = () => {
     const {allJobsData} = this.state
@@ -349,10 +299,6 @@ class JobsRoute extends Component {
     )
   }
 
-  onClickedRetry = () => {
-    this.getAllJobsData()
-  }
-
   renderAllJobsListFailureView = () => (
     <div className="failure-container">
       <img
@@ -362,7 +308,7 @@ class JobsRoute extends Component {
       />
       <h1 className="error-heading">Oops! Something Went Wrong</h1>
       <p className="error-description">
-        We cannot seem to find the page your are looking for.
+        We cannot seem to find the page you are looking for
       </p>
       <button
         type="button"
@@ -373,28 +319,89 @@ class JobsRoute extends Component {
       </button>
     </div>
   )
+  //   Render the Success, Failure, InProgress View for Profile & Jobs Content Ends --->
 
-  renderAllJobsListInProgressView = () => (
-    <div className="loader-container" data-testid="loader">
-      <Loader type="ThreeDots" color="#ffffff" height="40" width="40" />
-    </div>
+  //   Render Type of Employment List & Salary Range Starts --->
+  renderTypeOfEmploymentLists = () => (
+    <ul className="filter-type-lists-container">
+      {employmentTypesList.map(item => (
+        <li className="each-list-container" key={item.employmentTypeId}>
+          <input
+            type="checkbox"
+            id={item.employmentTypeId}
+            className="input-elem"
+            name={item.employmentTypeId}
+            onChange={this.onChangeTypeOfEmployment}
+          />
+          <label htmlFor={item.employmentTypeId} className="filter-label-text">
+            {item.label}
+          </label>
+        </li>
+      ))}
+    </ul>
   )
 
-  renderAllJobsDetailsList = () => {
-    const {apiStatus} = this.state
+  renderSalaryRangeLists = () => {
+    const {minimumPackage} = this.state
 
-    switch (apiStatus) {
+    return (
+      <ul className="filter-type-lists-container">
+        {salaryRangesList.map(item => {
+          const isChecked = item.salaryRangeId === minimumPackage ? 1 : 0
+          return (
+            <li className="each-list-container" key={item.salaryRangeId}>
+              <input
+                type="radio"
+                id={item.salaryRangeId}
+                className="input-elem"
+                value={item.label}
+                checked={isChecked}
+                onChange={this.salaryFilterIsChecked}
+              />
+              <label htmlFor={item.salaryRangeId} className="filter-label-text">
+                {item.label}
+              </label>
+            </li>
+          )
+        })}
+      </ul>
+    )
+  }
+  //   Render Type of Employment List & Salary Range Ends --->
+
+  //   Render Views according to apiStatus with SWITCH Cases for Profile & Jobs Content Starts --->
+  renderProfileContent = () => {
+    const {apiProfileStatus} = this.state
+
+    switch (apiProfileStatus) {
       case apiStatusConstant.success:
-        return this.renderAllJobsListSuccessView()
+        return this.renderProfileSuccessView()
       case apiStatusConstant.failure:
-        return this.renderAllJobsListFailureView()
+        return this.renderProfileFailureView()
       case apiStatusConstant.inProgress:
-        return this.renderAllJobsListInProgressView()
+        return this.renderLoadingView()
       default:
         return null
     }
   }
 
+  renderAllJobsDetailsList = () => {
+    const {apiJobsStatus} = this.state
+
+    switch (apiJobsStatus) {
+      case apiStatusConstant.success:
+        return this.renderAllJobsListSuccessView()
+      case apiStatusConstant.failure:
+        return this.renderAllJobsListFailureView()
+      case apiStatusConstant.inProgress:
+        return this.renderLoadingView()
+      default:
+        return null
+    }
+  }
+  //   Render Views according to apiStatus with SWITCH Cases for Profile & Jobs Content Ends --->
+
+  //   Main render() METHOD --->
   render() {
     const {employmentType} = this.state
     console.log(employmentType)

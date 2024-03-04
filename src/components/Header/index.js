@@ -44,15 +44,21 @@ const Header = props => {
         >
           Logout
         </button>
-        <div className="navigation-item-container-small-device">
-          <Link to="/">
-            <AiFillHome size="20" color="#ffffff" />
-          </Link>
-          <Link to="/jobs">
-            <BsBriefcaseFill size="20" color="#ffffff" />
-          </Link>
-          <FiLogOut size="20" color="#ffffff" onClick={onClickLogoutButton} />
-        </div>
+        <ul className="navigation-item-container-small-device">
+          <li>
+            <Link to="/">
+              <AiFillHome size="20" color="#ffffff" />
+            </Link>
+          </li>
+          <li>
+            <Link to="/jobs">
+              <BsBriefcaseFill size="20" color="#ffffff" />
+            </Link>
+          </li>
+          <li>
+            <FiLogOut size="20" color="#ffffff" onClick={onClickLogoutButton} />
+          </li>
+        </ul>
       </div>
     </div>
   )

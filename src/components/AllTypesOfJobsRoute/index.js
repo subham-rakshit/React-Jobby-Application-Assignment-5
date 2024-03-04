@@ -14,7 +14,7 @@ const AllTypesOfJobsRoute = props => {
         <div className="job-logo-and-title-container">
           <img
             src={data.companyLogoUrl}
-            alt={data.title}
+            alt="company logo"
             className="company-logo"
           />
           <div className="job-title-and-rating-container">
