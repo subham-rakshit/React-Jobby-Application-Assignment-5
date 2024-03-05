@@ -27,6 +27,7 @@ class JobItemDetailsRoute extends Component {
     this.getJobItemDetailsData()
   }
 
+  //   API CALL --->
   getJobItemDetailsData = async onClickId => {
     this.setState({apiStatusJobDetails: apiStatusConstant.inProgress})
 
@@ -90,6 +91,7 @@ class JobItemDetailsRoute extends Component {
     }
   }
 
+  //   After API CALL Success Job Item Details Content --->
   renderJobDetailsCard = () => {
     const {jobDetailsData} = this.state
     const {jobDetails, similarJobs} = jobDetailsData
@@ -110,6 +112,7 @@ class JobItemDetailsRoute extends Component {
 
     return (
       <>
+        {/* Job Details Content ---> */}
         <div className="job-details-card">
           <div className="job-item-details-logo-and-title-container">
             <img
@@ -189,6 +192,8 @@ class JobItemDetailsRoute extends Component {
             />
           </div>
         </div>
+
+        {/* Similar Jobs Details ---> */}
         <div className="similar-jobs-container">
           <h1 className="similar-jobs-heading">Similar Jobs</h1>
           <ul className="similar-jobs-list-container">
