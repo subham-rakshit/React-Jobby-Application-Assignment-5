@@ -2,6 +2,7 @@ import {Component} from 'react'
 
 import {withRouter} from 'react-router-dom'
 import Cookies from 'js-cookie'
+import Loader from 'react-loader-spinner'
 
 import {FaStar} from 'react-icons/fa'
 import {BsFillBriefcaseFill} from 'react-icons/bs'
@@ -26,7 +27,7 @@ class JobItemDetailsRoute extends Component {
     this.getJobItemDetailsData()
   }
 
-  getJobItemDetailsData = async () => {
+  getJobItemDetailsData = async onClickId => {
     this.setState({apiStatusJobDetails: apiStatusConstant.inProgress})
 
     const token = Cookies.get('jwt_token')
@@ -35,7 +36,9 @@ class JobItemDetailsRoute extends Component {
     const {params} = match
     const {id} = params
 
-    const jobDetailsApiUrl = `https://apis.ccbp.in/jobs/${id}`
+    const jobDetailsApiUrl = `https://apis.ccbp.in/jobs/${
+      onClickId === undefined ? id : onClickId
+    }`
     const options = {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -163,7 +166,11 @@ class JobItemDetailsRoute extends Component {
           <ul className="job-item-details-skills-container">
             {skills.map(skill => (
               <li className="skills-container" key={skill.name}>
-                <img src={skill.imageUrl} alt="skills" className="skill-img" />
+                <img
+                  src={skill.imageUrl}
+                  alt={skill.name}
+                  className="skill-img"
+                />
                 <p className="skill-name">{skill.name}</p>
               </li>
             ))}
@@ -185,9 +192,58 @@ class JobItemDetailsRoute extends Component {
         <div className="similar-jobs-container">
           <h1 className="similar-jobs-heading">Similar Jobs</h1>
           <ul className="similar-jobs-list-container">
-            {similarJobs.map(job => (
-              <li key={job.id}>{job.title}</li>
-            ))}
+            {similarJobs.map(job => {
+              const getSimilarJobDetails = () => {
+                this.getJobItemDetailsData(job.id)
+              }
+              return (
+                <li
+                  key={job.id}
+                  className="similar-jobs-card"
+                  onClick={getSimilarJobDetails}
+                >
+                  <div className="similar-jobs-logo-and-title-container">
+                    <img
+                      src={job.companyLogoUrl}
+                      alt="similar job company logo"
+                      className="similar-job-company-logo"
+                    />
+                    <div className="similar-job-title-and-rating-container">
+                      <h1 className="similar-job-item-details-title">
+                        {job.title}
+                      </h1>
+                      <div className="rating-container">
+                        <FaStar color="#fbbf24" className="star-icon" />
+                        <p className="rating-count">{job.rating}</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div>
+                    <h1 className="similar-job-details-description-heading">
+                      Description
+                    </h1>
+                    <p className="similar-job-details-description">
+                      {job.jobDescription}
+                    </p>
+                  </div>
+
+                  <div className="similar-job-details-location-type-container">
+                    <div className="location-icon-and-type-container">
+                      <MdLocationOn color="#f8fafc" className="icon" />
+                      <p className="job-item-details-location-and-type-text">
+                        {job.location}
+                      </p>
+                    </div>
+                    <div className="location-icon-and-type-container">
+                      <BsFillBriefcaseFill color="#f8fafc" className="icon" />
+                      <p className="job-item-details-location-and-type-text">
+                        {job.employmentType}
+                      </p>
+                    </div>
+                  </div>
+                </li>
+              )
+            })}
           </ul>
         </div>
       </>
@@ -196,12 +252,47 @@ class JobItemDetailsRoute extends Component {
 
   renderJobDetailsSuccessView = () => <>{this.renderJobDetailsCard()}</>
 
+  onClickedRetry = () => {
+    this.getJobItemDetailsData()
+  }
+
+  renderJobDetailsFailureView = () => (
+    <div className="job-details-failure-container">
+      <img
+        src="https://assets.ccbp.in/frontend/react-js/failure-img.png"
+        alt="failure view"
+        className="failure-img"
+      />
+      <h1 className="error-heading">Oops! Something Went Wrong</h1>
+      <p className="error-description">
+        We cannot seem to find the page you are looking for.
+      </p>
+      <button
+        type="button"
+        className="retry-button"
+        onClick={this.onClickedRetry}
+      >
+        Retry
+      </button>
+    </div>
+  )
+
+  renderLoadingView = () => (
+    <div className="loader-container" data-testid="loader">
+      <Loader type="ThreeDots" color="#ffffff" height="40" width="40" />
+    </div>
+  )
+
   renderJobDetailsContent = () => {
     const {apiStatusJobDetails} = this.state
 
     switch (apiStatusJobDetails) {
       case apiStatusConstant.success:
         return this.renderJobDetailsSuccessView()
+      case apiStatusConstant.failure:
+        return this.renderJobDetailsFailureView()
+      case apiStatusConstant.inProgress:
+        return this.renderLoadingView()
       default:
         return null
     }
